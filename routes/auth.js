@@ -10,6 +10,7 @@ import {
     register,
     registerForm,
     confirmAccount,
+    login,
 } from "../controllers/authController.js";
 const router = express.Router();
 router.use(csrfprotection);
@@ -23,9 +24,7 @@ router.get("/auth/confirm/:token", confirmAccount);
 
 // Login route
 router.get("/", loginForm);
-router.post("/login", (req, res) => {
-    // Handle login logic here
-});
+router.post("/login", login);
 
 // Logout route
 router.post("/logout", (req, res) => {

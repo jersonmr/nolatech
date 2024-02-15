@@ -7,7 +7,89 @@ import { registerEmail } from "../helpers/emails.js";
 const loginForm = (req, res) => {
     const success = req.query.success;
     const error = req.query.error;
-    res.render("auth/login", { title: "Login", success, error });
+    res.render("auth/login", {
+        title: "Login",
+        success,
+        error,
+        csrfToken: req.csrfToken(),
+    });
+};
+
+const login = async (req, res) => {
+    // Receiving form data
+    const { email, password } = req.body;
+
+    // Validate the form data
+    await check("email", "Email es requerido").notEmpty().run(req);
+    await check("email", "Email no es válido").isEmail().run(req);
+    await check("password", "Contraseña es requerida").notEmpty().run(req);
+
+    // Find the user
+    const user = await User.findOne({ where: { email } });
+
+    // Check if the user exists
+    if (!user) {
+        return res.render("auth/login", {
+            title: "Login",
+            csrfToken: req.csrfToken(),
+            error: "Email o contraseña incorrectos",
+            user: {
+                email: req.body.email,
+            },
+        });
+    }
+
+    // Check if the user has verified the email
+    if (!user.emailVerifiedAt) {
+        return res.render("auth/login", {
+            title: "Login",
+            csrfToken: req.csrfToken(),
+            error: "Por favor verifica tu email",
+            user: {
+                email: req.body.email,
+            },
+        });
+    }
+
+    // Check if the password is correct
+    const validPassword = await bcrypt.compare(password, user.password);
+
+    if (!validPassword) {
+        return res.render("auth/login", {
+            title: "Login",
+            csrfToken: req.csrfToken(),
+            error: "Email o contraseña incorrectos",
+            user: {
+                email: req.body.email,
+            },
+        });
+    }
+
+    // Check for validation errors
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.render("auth/login", {
+            title: "Login",
+            csrfToken: req.csrfToken(),
+            errors: errors.array(),
+            user: {
+                email: req.body.email,
+            },
+        });
+    }
+
+    // Generate a token
+    const token = jwt.sign({ email }, process.env.APP_KEY, {
+        expiresIn: "1h",
+    });
+
+    // Set the token in a cookie and redirect to the dashboard
+    return res
+        .cookie("_token", token, {
+            httpOnly: true,
+        })
+        .redirect("/dashboard");
 };
 
 const registerForm = (req, res) => {
@@ -87,10 +169,9 @@ const register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Generate a token
-    const token = jwt.sign({ email }, process.env.TOKEN, {
-        expiresIn: "1h",
-    });
+    // Generate a random token
+    const token =
+        Math.random().toString(36).substring(2) + Date.now().toString(36);
 
     // Create a new user
     const newUser = await User.create({
@@ -118,7 +199,7 @@ const register = async (req, res) => {
 
 // Check account verification
 const confirmAccount = async (req, res, next) => {
-    const token = 123; //req.params.token;
+    const token = req.params.token;
 
     // Check if is a valid token
     const user = await User.findOne({ where: { token } });
@@ -140,4 +221,4 @@ const confirmAccount = async (req, res, next) => {
     next();
 };
 
-export { loginForm, registerForm, register, confirmAccount };
+export { loginForm, login, registerForm, register, confirmAccount };
