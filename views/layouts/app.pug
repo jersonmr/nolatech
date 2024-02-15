@@ -25,7 +25,7 @@ html
                             // Profile dropdown
                             div(class="relative ml-3")
                                 div.flex.items-center
-                                    p Bienvenido, #{username}
+                                    p Bienvenido, #{user.username}
                                     span.mx-3 |
                                     form.mb-0(action="/logout" method="post")
                                         input(type="hidden" name="_csrf" value=csrfToken)
