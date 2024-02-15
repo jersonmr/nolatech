@@ -6,6 +6,7 @@ import {
     registerForm,
     confirmAccount,
     login,
+    logout,
 } from "../controllers/authController.js";
 const router = express.Router();
 
@@ -21,8 +22,6 @@ router.get("/", loginForm);
 router.post("/login", login);
 
 // Logout route
-router.post("/logout", (req, res) => {
-    // Handle logout logic here
-});
+router.post("/logout", logout);
 
 export default router;

@@ -221,4 +221,8 @@ const confirmAccount = async (req, res, next) => {
     next();
 };
 
-export { loginForm, login, registerForm, register, confirmAccount };
+const logout = (req, res) => {
+    res.clearCookie("_token").redirect("/");
+};
+
+export { loginForm, login, registerForm, register, confirmAccount, logout };
