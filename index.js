@@ -2,7 +2,9 @@ import express from "express";
 import csrf from "csurf";
 import cookieParser from "cookie-parser";
 
-import authRoutes from "./routes/auth.js";
+import authRoutes from "./routes/authRoutes.js";
+import appRoutes from "./routes/appRoutes.js";
+
 import db from "./config/db.js";
 
 // Create an Express application
@@ -41,3 +43,4 @@ app.listen(port, () => {
 
 // Define a route
 app.use("/", authRoutes);
+app.use("/dashboard", appRoutes);

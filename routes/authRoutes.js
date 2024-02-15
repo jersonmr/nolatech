@@ -1,9 +1,4 @@
 import express from "express";
-import csrf from "csurf";
-
-const csrfprotection = csrf({
-    cookie: true,
-});
 
 import {
     loginForm,
@@ -13,7 +8,6 @@ import {
     login,
 } from "../controllers/authController.js";
 const router = express.Router();
-router.use(csrfprotection);
 
 // Register route
 router.get("/register", registerForm);
