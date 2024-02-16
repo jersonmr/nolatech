@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 
 import authRoutes from "./routes/authRoutes.js";
 import appRoutes from "./routes/appRoutes.js";
+import apiRoutes from "./routes/apiRoutes.js";
 
 import db from "./config/db.js";
 
@@ -11,12 +12,14 @@ import db from "./config/db.js";
 const app = express();
 
 // Middleware
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// app.use(express.json());
+
+app.use("/api/v1", apiRoutes);
 
 // CSRF protection
 app.use(cookieParser());
-app.use(csrf({ cookie: true }));
+app.use(csrf({ cookie: true, httpOnly: true }));
 
 // Database connection
 try {
