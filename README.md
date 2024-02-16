@@ -21,7 +21,11 @@ Por defecto el proyecto corre en el puerto 3000 pero puedes configurar tu propio
 
 ## Ejecutar el proyecto
 
-Ubícate en una terminal en el directorio donde instalaste el proyecto y ejecuta el comando `npm run dev`
+Ubícate en una terminal en el directorio donde instalaste el proyecto y ejecuta los comandos:
+```bash
+npm install
+npm run dev
+```
 
 ## Ejecutar el seeder
 
